@@ -16,7 +16,7 @@ import requests  # pylint: disable=import-error
 from requests.adapters import HTTPAdapter  # pylint: disable=import-error
 
 import params
-import extraData
+import extra_data
 import plots
 
 predictableFeatures = ['Tl', 'Tg', 'Tx', 'deltaT', 'GFA', 'Dmax']
@@ -608,8 +608,8 @@ def calculate_QPR(elementA, elementB):
         R = 0
     else:
         P = 12.3
-        R = extraData.Rparams(elementA) * \
-            extraData.Rparams(elementB)
+        R = extra_data.Rparams(elementA) * \
+            extra_data.Rparams(elementB)
 
     Q = P * 9.4
 
@@ -617,8 +617,8 @@ def calculate_QPR(elementA, elementB):
 
 
 def calculate_electronegativity_enthalpy_component(elementA, elementB, P):
-    electronegativityDiff = extraData.electronegativityMiedema(
-        elementA) - extraData.electronegativityMiedema(elementB)
+    electronegativityDiff = extra_data.electronegativityMiedema(
+        elementA) - extra_data.electronegativityMiedema(elementB)
 
     return -P * (electronegativityDiff**2)
 
@@ -654,10 +654,10 @@ def calc_f_AB(surfaceConcentration_A, surfaceConcentration_B):
 
 def calculate_corrected_volume(elementA, elementB, Cs_A):
 
-    pureV = extraData.volumeMiedema(elementA)
+    pureV = extra_data.volumeMiedema(elementA)
 
-    electronegativityDiff = extraData.electronegativityMiedema(
-        elementA) - extraData.electronegativityMiedema(elementB)
+    electronegativityDiff = extra_data.electronegativityMiedema(
+        elementA) - extra_data.electronegativityMiedema(elementB)
 
     a = None
     if(elementA in ['Ca', 'Sr', 'Ba']):
@@ -720,8 +720,8 @@ def calculate_mixing_enthalpy(composition):
                     subComposition
 
             Cs_A = None
-            V_A_alloy, V_B_alloy = extraData.volumeMiedema(
-                pair[0]), extraData.volumeMiedema(pair[1])
+            V_A_alloy, V_B_alloy = extra_data.volumeMiedema(
+                pair[0]), extra_data.volumeMiedema(pair[1])
             for _ in range(10):
 
                 Cs_A = calculate_surface_concentration(
@@ -1065,7 +1065,7 @@ def getElementData():
     for element in elementData:
         elementData[element]['electronegativity']['mulliken'] = mulliken(
             element, elementData)
-        elementData[element]['electronegativity']['miedema'] = extraData.electronegativityMiedema(
+        elementData[element]['electronegativity']['miedema'] = extra_data.electronegativityMiedema(
             element)
 
     return elementData

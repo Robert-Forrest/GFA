@@ -1,5 +1,5 @@
 from PIL import Image
-import extraData
+import extra_data
 import features
 import params
 from adjustText import adjust_text
@@ -152,12 +152,6 @@ def plot_binary(elements, model, onlyPredictions=False, originalData=None, inspe
                     ax1.plot(all_features[inspect_feature],
                              all_features[feature])
 
-                if feature == 'Tl' and inspect_feature == 'percentage':
-                    if "".join(elements) in extraData.phaseDiagrams:
-                        phaseDiagram = extraData.phaseDiagrams["".join(
-                            elements)]
-                        ax1.scatter(
-                            phaseDiagram[0], phaseDiagram[1], marker='x', color='r')
 
                 if len(realData) > 0 and feature in realData and inspect_feature in realData:
                     crystalData, crystalPercentages = filter_masked(
