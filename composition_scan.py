@@ -8,8 +8,8 @@ import params
 def run(compositions=None):
 
     if compositions is None:
-       print("Error: No compositions entered")
-       exit()
+        print("Error: No compositions entered")
+        exit()
     else:
         for i in range(len(compositions)):
             compositions[i] = re.findall('[A-Z][^A-Z]*', compositions[i])
@@ -22,10 +22,10 @@ def run(compositions=None):
 
     model = neuralnets.load(params.output_directory + '/model')
 
-    inspect_features = ['percentage', 'mixingGibbsFreeEnergy', 'PHSS', 'mixingEntropy', 'mixingEnthalpy', 'mixingGibbsFreeEnergy',
-                        'wignerSeitzElectronDensity_discrepancy', 'series_discrepancy', 'radius_discrepancy', 'density_linearMix', 'pValence', 'dValence']
+    inspect_features = ['percentage', 'mixing_Gibbs_free_energy', 'PHSS', 'mixing_entropy', 'mixing_enthalpy',
+                        'wigner_seitz_electron_density_deviation', 'series_deviation', 'radius_deviation', 'density_linearmix', 'p_valence', 'd_valence']
     additionalFeatures = [
-        'price', 'wignerSeitzElectronDensity', 'mixingEnthalpy', 'mixingGibbsFreeEnergy', 'radius', 'pValence', 'dValence']
+        'price', 'wigner_seitz_electron_density', 'mixing_enthalpy', 'mixing_Gibbs_free_energy', 'radius', 'p_valence', 'd_valence']
 
     if plotExamples:
         originalData = features.load_data(
