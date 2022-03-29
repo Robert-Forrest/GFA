@@ -213,7 +213,7 @@ def get_dense(units, activation, regularizer, regularizer_rate, max_norm,
         return tfp.layers.DenseVariational(units,
                                            make_prior_fn=prior, make_posterior_fn=posterior,
                                            kl_weight=1 /
-                                           (20 * features.batch_size),
+                                           (20 * params.batch_size),
                                            activation='sigmoid')
     else:
         if regularizer == 'l1':
@@ -604,7 +604,7 @@ def fit(model, train_features, train_labels, sampleWeight, test_features=None,
     history = model.fit(
         x=xTrain,
         y=yTrain,
-        batch_size=features.batch_size,
+        batch_size=params.batch_size,
         epochs=maxEpochs,
         callbacks=[
             tf.keras.callbacks.EarlyStopping(
