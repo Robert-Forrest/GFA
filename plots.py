@@ -18,6 +18,7 @@ import pandas as pd  # pylint: disable=import-error
 import matplotlib as mpl  # pylint: disable=import-error
 from mpl_toolkits import axes_grid1
 import matplotlib.collections as mcoll
+import metallurgy as mg
 mpl.use('Agg')
 plt.style.use('ggplot')
 plt.rc('axes', axisbelow=True)
@@ -50,7 +51,7 @@ def plot_binary(elements, model, onlyPredictions=False, originalData=None, inspe
     requiredFeatures = None
     if originalData is not None:
         for _, row in originalData.iterrows():
-            parsedComposition = features.parse_composition(row['composition'])
+            parsedComposition = mg.alloy.parse_composition(row['composition'])
             if set(elements).issuperset(set(parsedComposition.keys())):
                 if elements[0] in parsedComposition:
                     row['percentage'] = parsedComposition[elements[0]] * 100
@@ -102,10 +103,6 @@ def plot_binary(elements, model, onlyPredictions=False, originalData=None, inspe
             os.makedirs(binary_dir+'/'+inspect_feature + '/features')
 
         for feature in all_features.columns:
-            # print(feature)
-            # print(onlyPredictions, feature not in features.predictableFeatures,
-            #       feature not in additionalFeatures)
-            # print()
             trueFeatureName = feature.split(
                 '_linearMix')[0].split('_discrepancy')[0]
             if (onlyPredictions and feature not in features.predictableFeatures and trueFeatureName not in additionalFeatures) or inspect_feature == feature:
@@ -151,7 +148,6 @@ def plot_binary(elements, model, onlyPredictions=False, originalData=None, inspe
                 else:
                     ax1.plot(all_features[inspect_feature],
                              all_features[feature])
-
 
                 if len(realData) > 0 and feature in realData and inspect_feature in realData:
                     crystalData, crystalPercentages = filter_masked(
@@ -436,7 +432,7 @@ def generate_ternary_compositions(
 
     realData = []
     for _, row in originalData.iterrows():
-        parsedComposition = features.parse_composition(row['composition'])
+        parsedComposition = mg.alloy.parse_composition(row['composition'])
         if quaternary is not None:
             if quaternary[1] > 0:
                 if quaternary[0] not in parsedComposition:
