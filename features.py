@@ -442,18 +442,29 @@ def calculate_features(data, calculate_extra_features=True, use_composition_vect
 
             if 'mismatch_PHS' in complexFeatureValues:
                 complexFeatureValues['mismatch_PHS'].append(
-                    complexFeatureValues['mixing_enthalpy'][-1] * complexFeatureValues['mismatch_entropy'][-1])
+                    mg.enthalpy.calculate_mismatch_PHS(
+                        composition,
+                        complexFeatureValues['mixing_enthalpy'][-1],
+                        complexFeatureValues['mismatch_entropy'][-1])
+                    )
 
             if 'mixing_PHS' in complexFeatureValues:
-                complexFeatureValues['mixing_PHS'].append(
-                    complexFeatureValues['mixing_enthalpy'][-1] * complexFeatureValues['mixing_entropy'][-1])
+                complexFeatureValues['mismatch_PHS'].append(
+                    mg.enthalpy.calculate_mixing_PHS(
+                        composition,
+                        complexFeatureValues['mixing_enthalpy'][-1],
+                        complexFeatureValues['mixing_entropy'][-1])
+                    )
+                
 
             if 'PHSS' in complexFeatureValues:
                 complexFeatureValues['PHSS'].append(
-                    complexFeatureValues['mixing_enthalpy'][-1] *
-                    complexFeatureValues['mixing_entropy'][-1] *
-                    complexFeatureValues['mismatch_entropy'][-1]
-                )
+                    mg.enthalpy.calculate_mixing_PHS(
+                        composition,
+                        complexFeatureValues['mixing_enthalpy'][-1],
+                        complexFeatureValues['mixing_entropy'][-1],
+                        complexFeatureValues['mismatch_entropy'][-1])
+                    )
 
             if 'viscosity' in complexFeatureValues:
                 complexFeatureValues['viscosity'].append(
@@ -468,29 +479,29 @@ def calculate_features(data, calculate_extra_features=True, use_composition_vect
                     mg.radii.calculate_lattice_distortion(composition))
 
             if 'EsnPerVec' in complexFeatureValues:
-                complexFeatureValues['EsnPerVec'].append(featureValues['period']['linearmix']
-                                                         [-1] / featureValues['valence_electrons']['linearmix'][-1])
+                complexFeatureValues['EsnPerVec'].append(
+                    mg.ratios.shell_to_valence_electron_concentration(
+                        featureValues['period']['linearmix'][-1],
+                        featureValues['valence_electrons']['linearmix'][-1])
+                    )
 
             if 'EsnPerMn' in complexFeatureValues:
-                complexFeatureValues['EsnPerMn'].append(featureValues['period']['linearmix']
-                                                        [-1] / featureValues['mendeleev_universal_sequence']['linearmix'][-1])
+                complexFeatureValues['EsnPerMn'].append(
+                    mg.ratios.shell_to_valence_electron_concentration(
+                        featureValues['period']['linearmix'][-1],
+                        featureValues['mendeleev_universal_sequence']['linearmix'][-1])
+                    )
 
-            if 'Rc' in complexFeatureValues:
-                complexFeatureValues['Rc'].append(((featureValues['melting_temperature']['linearmix'][-1]**2)
-                                                   /
-                                                   (complexFeatureValues['atomicVolume_linearmix'][-1]
-                                                    * complexFeatureValues['viscosity'][-1])) *
-                                                  np.exp(complexFeatureValues['mixing_Gibbs_free_energy'][-1]
-                                                         / (idealGasConstant *
-                                                            featureValues['melting_temperature']['linearmix'][-1])))
-
-            if 'rearrangement_inhibition' in complexFeatureValues:
-                complexFeatureValues['rearrangement_inhibition'].append(
-                    -complexFeatureValues['mixing_entropy'][-1] / ((complexFeatureValues['mixing_enthalpy'][-1] * 1e3) - 1e-10))
 
             if 'thermodynamic_factor' in complexFeatureValues:
                 complexFeatureValues['thermodynamic_factor'].append(
-                    (featureValues['melting_temperature']['linearmix'][-1] * complexFeatureValues['mixing_entropy'][-1]) / (np.abs(complexFeatureValues['mixing_enthalpy'][-1] * 1e3) + 1e-10))
+                    mg.enthalpy.calculate_thermodynamic_factor(
+                        featureValues['melting_temperature']['linearmix'][-1],
+                        complexFeatureValues['mixing_entropy'][-1],
+                        complexFeatureValues['mixing_enthalpy'][-1]
+                    )
+                )
+                
 
     if use_composition_vector:
         for element in compositionPercentages:
@@ -732,7 +743,6 @@ def create_datasets(data, train=[], test=[]):
         classWeights = []
         for c in classes:
             if c in counts:
-                # classWeights.append(numSamples / (len(classes)+counts[c]))
                 classWeights.append(numSamples / (2 * counts[c]))
             else:
                 classWeights.append(1.0)
