@@ -2,7 +2,6 @@ import re
 
 import cerebral as cb
 
-import plots
 
 def run(compositions=None):
 
@@ -24,18 +23,18 @@ def run(compositions=None):
         'price', 'wigner_seitz_electron_density', 'mixing_enthalpy', 'mixing_Gibbs_free_energy', 'radius', 'p_valence', 'd_valence']
 
     if plotExamples:
-        originalData = cb.io.load_data(['data.csv'],"./data.",
-            model=model, plot=False, dropCorrelatedFeatures=False,  additionalFeatures=additionalFeatures)
+        originalData = cb.io.load_data(['data.csv'], "./data.",
+                                       model=model, plot=False, dropCorrelatedFeatures=False,  additionalFeatures=additionalFeatures)
     else:
         originalData = None
 
     for composition in compositions:
         if len(composition) == 2:
-            plots.plot_binary(composition, model, onlyPredictions=onlyPredictions,
+            cb.plots.plot_binary(composition, model, onlyPredictions=onlyPredictions,
                               originalData=originalData, inspect_features=inspect_features, additionalFeatures=additionalFeatures)
         elif len(composition) == 3:
-            plots.plot_ternary(composition, model, onlyPredictions=onlyPredictions,
+            cb.plots.plot_ternary(composition, model, onlyPredictions=onlyPredictions,
                                originalData=originalData, additionalFeatures=additionalFeatures)
         elif len(composition) == 4:
-            plots.plot_quaternary(composition, model, onlyPredictions=onlyPredictions,
+            cb.plots.plot_quaternary(composition, model, onlyPredictions=onlyPredictions,
                                   originalData=originalData, additionalFeatures=additionalFeatures)

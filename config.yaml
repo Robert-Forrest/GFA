@@ -1,4 +1,7 @@
-output_directory:
-
+task: simple
 train:
-  max_expochs: 100
+  max_epochs: 10
+data:
+  directory: './data'
+  files:
+    - 'data.csv'
