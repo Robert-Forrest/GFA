@@ -1,0 +1,4 @@
+output_directory:
+
+train:
+  max_expochs: 100
