@@ -26,20 +26,6 @@ plt.rc('axes', axisbelow=True)
 # mpl.rcParams['text.usetex'] = True
 
 
-def make_binary_compositions(elements):
-    step = 0.5
-    x = 0
-    compositions = []
-    percentages = []
-    while x <= 100:
-        compositions.append(
-            elements[0] + str(x) + elements[1] + str(100 - x))
-        percentages.append(x)
-        x += step
-
-    return compositions, percentages
-
-
 def plot_binary(elements, model, onlyPredictions=False, originalData=None, inspect_features=["percentage"], additionalFeatures=[]):
     if not os.path.exists(params.image_directory + "compositions"):
         os.makedirs(params.image_directory + "compositions")
@@ -66,7 +52,7 @@ def plot_binary(elements, model, onlyPredictions=False, originalData=None, inspe
         if feature not in requiredFeatures:
             requiredFeatures.append(feature)
 
-    compositions, percentages = make_binary_compositions(elements)
+    compositions, percentages = mg.binary.generate_alloys(elements)
 
     all_features = pd.DataFrame(compositions, columns=['composition'])
     all_features = features.calculate_features(all_features,
@@ -395,36 +381,6 @@ def plot_quaternary(elements, model, onlyPredictions=False, originalData=None, a
         plt.close()
 
 
-def make_ternary_compositions(elements, step=1, minPercent=0, maxPercent=100, quaternary=None):
-
-    compositions = []
-    allPercentages = []
-    percentages = [minPercent - step, minPercent - step, minPercent - step]
-    while percentages[0] <= maxPercent:
-        percentages[0] += step
-        percentages[1] = minPercent - step
-        percentages[2] = minPercent - step
-        while percentages[1] <= maxPercent:
-            percentages[1] += step
-            percentages[2] = minPercent - step
-            while percentages[2] <= maxPercent:
-                percentages[2] += step
-                if(sum(percentages) == 100):
-                    allPercentages.append(percentages[:])
-                    composition_str = ""
-                    for i in range(len(elements)):
-                        if(percentages[i] > 0):
-                            composition_str += elements[i] + \
-                                str(percentages[i])
-
-                    if quaternary is not None:
-                        composition_str = "(" + composition_str + ")" + str(
-                            100 - quaternary[1]) + quaternary[0] + str(quaternary[1])
-
-                    compositions.append(composition_str)
-    return compositions, allPercentages
-
-
 def generate_ternary_compositions(
         elements, model, originalData, quaternary=None, minPercent=0, maxPercent=100, step=None, additionalFeatures=[]):
     if step is None:
@@ -453,7 +409,7 @@ def generate_ternary_compositions(
             realData.append(row)
     realData = pd.DataFrame(realData)
 
-    compositions, allPercentages = make_ternary_compositions(
+    compositions, allPercentages = mg.ternary.generate_alloys(
         elements, step, minPercent, maxPercent, quaternary)
 
     all_features = pd.DataFrame(compositions, columns=['composition'])
@@ -1149,7 +1105,8 @@ def plot_results_regression(train_labels, train_predictions,
             annotations = []
             for e in labelled_errors:
                 annotations.append(plt.text(e[0], e[1],
-                                            features.prettyComposition(e[2]),
+                                            mg.alloy.pretty_composition_str(
+                                                e[2]),
                                             fontsize=8))
 
             plt.xlabel('True ' + features.prettyName(feature) +
