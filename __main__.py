@@ -1,10 +1,10 @@
 # pylint: disable=no-member
 from __future__ import absolute_import, division, print_function, unicode_literals
-
+import argparse
 import sys
 import xlrd
-from omegaconf import OmegaConf
 
+from omegaconf import OmegaConf
 import cerebral as cb
 
 import data
@@ -12,18 +12,24 @@ import composition_scan
 
 if __name__ == '__main__':
 
-    conf = OmegaConf.load('config.yaml')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('config', default="config.yaml", nargs='?', type=str)
 
-    cb.setup()
+    args = parser.parse_args()
 
-    if conf.task in ['simple', 'kFolds', 'kFoldsEnsemble',
+    conf = OmegaConf.load(args.config)
+
+    cb.setup(config=args.config)
+
+    if conf.task in ['simple', 'kfolds', 'kfoldsEnsemble',
                      'tune', 'featurePermutation', 'compositionScan']:
 
         if conf.task == 'simple':
             train_percentage = conf.train.get("train_percentage", 1.0)
             max_epochs = conf.train.get("max_epochs", 100)
 
-            originalData = cb.io.load_data(postprocess=data.ensure_default_values)
+            originalData = cb.io.load_data(
+                postprocess=data.ensure_default_values)
 
             if train_percentage < 1.0:
 
@@ -63,12 +69,13 @@ if __name__ == '__main__':
         else:
             if conf.task != 'featurePermutation':
 
-                originalData = cb.io.load_data(postprocess=data.ensure_default_values)
+                originalData = cb.io.load_data(
+                    postprocess=data.ensure_default_values)
 
-                if conf.task == 'kFolds':
+                if conf.task == 'kfolds':
                     cb.kfolds.kfolds(originalData)
 
-                elif conf.task == 'kFoldsEnsemble':
+                elif conf.task == 'kfoldsEnsemble':
                     cb.kfolds.kfoldsEnsemble(originalData)
 
                 elif conf.task == 'tune':
