@@ -11,9 +11,6 @@ from sklearn.feature_selection import VarianceThreshold  # pylint: disable=impor
 from sklearn import preprocessing
 from sklearn.utils.class_weight import compute_class_weight
 from decimal import Decimal
-from urllib3.util.retry import Retry  # pylint: disable=import-error
-import requests  # pylint: disable=import-error
-from requests.adapters import HTTPAdapter  # pylint: disable=import-error
 
 import elementy
 import metallurgy as mg
@@ -45,22 +42,6 @@ for feature in units:
     else:
         split_units = units[feature].split('/')
         inverse_units[feature] = split_units[1] + "/" + split_units[0]
-
-
-def requests_session():
-    session = requests.Session()
-    retry = Retry(
-        total=100,
-        read=100,
-        connect=100,
-        backoff_factor=1.5,
-        status_forcelist=(429, 500, 502, 503, 504),
-        method_whitelist=frozenset(['GET', 'PATCH', 'POST'])
-    )
-    adapter = HTTPAdapter(max_retries=retry)
-    session.mount('http://', adapter)
-    session.mount('https://', adapter)
-    return session
 
 
 def load_data(calculate_extra_features=True, use_composition_vector=False, plot=True,
