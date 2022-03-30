@@ -7,6 +7,7 @@ from omegaconf import OmegaConf
 
 import cerebral as cb
 
+import data
 import composition_scan
 
 if __name__ == '__main__':
@@ -15,14 +16,14 @@ if __name__ == '__main__':
 
     cb.setup()
 
-    if conf.task in ['simple', 'kfolds', 'kfoldsEnsemble',
+    if conf.task in ['simple', 'kFolds', 'kFoldsEnsemble',
                      'tune', 'featurePermutation', 'compositionScan']:
 
         if conf.task == 'simple':
             train_percentage = conf.train.get("train_percentage", 1.0)
             max_epochs = conf.train.get("max_epochs", 100)
 
-            originalData = cb.io.load_data()
+            originalData = cb.io.load_data(postprocess=data.ensure_default_values)
 
             if train_percentage < 1.0:
 
@@ -62,22 +63,22 @@ if __name__ == '__main__':
         else:
             if conf.task != 'featurePermutation':
 
-                originalData = cb.io.load_data()
+                originalData = cb.io.load_data(postprocess=data.ensure_default_values)
 
-                if conf.task == 'kfolds':
-                    kfolds.kfolds(originalData)
+                if conf.task == 'kFolds':
+                    cb.kfolds.kfolds(originalData)
 
-                elif conf.task == 'kfoldsEnsemble':
-                    kfolds.kfoldsEnsemble(originalData)
+                elif conf.task == 'kFoldsEnsemble':
+                    cb.kfolds.kfoldsEnsemble(originalData)
 
                 elif conf.task == 'tune':
 
                     train_ds, train_features, train_labels, sampleWeight = cb.features.create_datasets(
                         originalData)
 
-                    tuning.tune(train_features, train_labels, sampleWeight)
+                    cb.tuning.tune(train_features, train_labels, sampleWeight)
             else:
-                permutation.permutation()
+                cb.permutation.permutation()
 
     else:
         print("Unknown task", conf.task)
