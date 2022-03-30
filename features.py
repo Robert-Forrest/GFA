@@ -179,8 +179,8 @@ def calculate_compositions(data):
                     columns_to_drop.append(column)
                 if row[column] > 0:
                     composition[column] = row[column] / 100.0
-        composition = composition_to_string(composition)
-        compositions.append(composition)
+        composition = mg.Alloy(composition)
+        compositions.append(composition.to_string())
 
     data['composition'] = compositions
     for column in columns_to_drop:
@@ -377,7 +377,6 @@ def calculate_features(data, calculate_extra_features=True, use_composition_vect
     for i, row in data.iterrows():
 
         composition = mg.alloy.parse_composition(row['composition'])
-        print(i, row['composition'])
 
         ensure_default_values(row, i, data)
 
@@ -533,8 +532,7 @@ def calculate_features(data, calculate_extra_features=True, use_composition_vect
         seen_compositions = []
         duplicate_compositions = {}
         for i, row in data.iterrows():
-
-            composition = mg.alloy.alloy_to_string(row['composition'])
+            composition = mg.Alloy(row['composition']).to_string()
 
             if(not mg.alloy.valid_composition(row['composition'])):
                 print("Invalid composition:", row['composition'], i)
@@ -552,7 +550,7 @@ def calculate_features(data, calculate_extra_features=True, use_composition_vect
 
         to_drop = []
         for i, row in data.iterrows():
-            composition = mg.alloy.alloy_to_string(row['composition'])
+            composition = mg.Alloy(row['composition']).to_string()
 
             if composition in duplicate_compositions:
                 to_drop.append(i)
