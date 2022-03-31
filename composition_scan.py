@@ -20,14 +20,14 @@ def run(compositions=None):
 
     model = cb.models.load(cb.conf.output_directory + '/model')
 
-    inspect_features = cb.conf.x_features
-    additionalFeatures = cb.conf.y_features
+    x_features = cb.conf.x_features
+    y_features = cb.conf.y_features
 
     if plotExamples:
         originalData = cb.io.load_data(
             model=model, plot=False,
             dropCorrelatedFeatures=False,
-            additionalFeatures=additionalFeatures,
+            additionalFeatures=y_features,
             postprocess=data.ensure_default_values)
     else:
         originalData = None
@@ -37,18 +37,18 @@ def run(compositions=None):
             eg.plots.plot_binary(
                 composition, model,
                 originalData=originalData,
-                inspect_features=inspect_features,
-                additionalFeatures=additionalFeatures)
+                x_features=x_features,
+                y_features=y_features)
 
         elif len(composition) == 3:
             eg.plots.plot_ternary(
                 composition, model,
                 originalData=originalData,
-                additionalFeatures=additionalFeatures)
+                y_features=y_features)
 
         elif len(composition) == 4:
             eg.plots.plot_quaternary(
                 composition, model,
                 onlyPredictions=onlyPredictions,
                 originalData=originalData,
-                additionalFeatures=additionalFeatures)
+                y_features=y_features)
