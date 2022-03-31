@@ -7,9 +7,9 @@ doi:xyz
 
 ## Instructions
 
-This repository utilises a number of other packages to process data,
-train neural networks, evaluate those networks, and visualise
-predictions.
+The code in this repository utilises a number of other packages to
+process data, train neural networks, evaluate those networks, and
+visualise predictions.
 
 To run this code, execute the following:
 
@@ -20,7 +20,7 @@ python3 -m pip install -r requirements.txt
 python3 __main__.py examples/simple.yaml
 ```
 
-The examples directory contains configuration files for as number of
+The examples directory contains configuration files for a number of
 situations.
 
 ### simple.yaml
