@@ -1,6 +1,6 @@
 task: simple
 train:
-  max_epochs: 10
+  max_epochs: 1000
 data:
   directory: './data'
   files:
