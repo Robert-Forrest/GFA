@@ -1,9 +1,10 @@
 import numpy as np
-import cerebral as cb 
+import cerebral as cb
+
 
 def ensure_default_values(data):
     for i, row in data.iterrows():
-        
+
         try:
             _ = data.at[i, 'Dmax']
             hasDmax = True
@@ -50,12 +51,11 @@ def ensure_default_values(data):
 
         if 'Tx' in row and 'Tg' in row:
             if (not np.isnan(row['Tx'])
-                and not np.isnan(row['Tg']) 
+                and not np.isnan(row['Tg'])
                 and not row['Tx'] == cb.features.maskValue
-                and not row['Tg'] == cb.features.maskValue):
+                    and not row['Tg'] == cb.features.maskValue):
                 data.at[i, 'deltaT'] = row['Tx'] - row['Tg']
             else:
                 data.at[i, 'deltaT'] = cb.features.maskValue
-                
+
     return data
-                
