@@ -43,6 +43,13 @@ model.
 task, which performs ensembling to create a meta-learner based on the
 submodels produced during k-folds cross-validation.
 
+### permutation.yaml
+
+`permutation.yaml` contains configuration for the
+`feature_permutation` task, which shuffles features and measures the
+resulting change in model efficacy to judge their importance.
+
+
 ### composition_scan.yaml
 
 `composition_scan.yaml` contains configuration for the

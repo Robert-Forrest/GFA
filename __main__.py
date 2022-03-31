@@ -18,7 +18,7 @@ if __name__ == '__main__':
     cb.setup(config=args.config)
 
     if conf.task in ['simple', 'kfolds', 'kfoldsEnsemble',
-                     'tune', 'featurePermutation', 'compositionScan']:
+                     'tune', 'feature_permutation', 'compositionScan']:
 
         if conf.task == 'simple':
             train_percentage = conf.train.get("train_percentage", 1.0)
@@ -63,7 +63,7 @@ if __name__ == '__main__':
             composition_scan.run(compositions=conf.compositions)
 
         else:
-            if conf.task != 'featurePermutation':
+            if conf.task != 'feature_permutation':
 
                 originalData = cb.io.load_data(
                     postprocess=data.ensure_default_values)
@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
                     cb.tuning.tune(train_features, train_labels, sampleWeight)
             else:
-                cb.permutation.permutation()
+                cb.permutation.permutation(postprocess=data.ensure_default_values)
 
     else:
         print("Unknown task", conf.task)
