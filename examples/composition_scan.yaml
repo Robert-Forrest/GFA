@@ -1,7 +1,7 @@
 task: compositionScan
 model_name: simple
 compositions:
-  - CuZr
+  - CuZrAlAg
 train:
   max_epochs: 10
 kfolds:
@@ -12,16 +12,10 @@ data:
     - 'data.csv'
 x_features:
   - percentage
-  - mixing_Gibbs_free_energy
-  - mixing_entropy
   - mixing_enthalpy
 y_features:
+  - Dmax
   - wigner_seitz_electron_density_deviation
-  - series_deviation
-  - radius_deviation
-  - density_linearmix
-  - p_valence
-  - d_valence
 targets:
   - name: Tl
     type: numerical
