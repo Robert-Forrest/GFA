@@ -1,9 +1,10 @@
 import re
 
 import cerebral as cb
+import eyeglass as eg
 
 import data
-import plots
+
 
 def run(compositions=None):
 
@@ -33,11 +34,21 @@ def run(compositions=None):
 
     for composition in compositions:
         if len(composition) == 2:
-            plots.plot_binary(composition, model, onlyPredictions=onlyPredictions,
-                                 originalData=originalData, inspect_features=inspect_features, additionalFeatures=additionalFeatures)
+            eg.plots.plot_binary(
+                composition, model,
+                originalData=originalData,
+                inspect_features=inspect_features,
+                additionalFeatures=additionalFeatures)
+
         elif len(composition) == 3:
-            plots.plot_ternary(composition, model, onlyPredictions=onlyPredictions,
-                                  originalData=originalData, additionalFeatures=additionalFeatures)
+            eg.plots.plot_ternary(
+                composition, model,
+                originalData=originalData,
+                additionalFeatures=additionalFeatures)
+
         elif len(composition) == 4:
-            plots.plot_quaternary(composition, model, onlyPredictions=onlyPredictions,
-                                     originalData=originalData, additionalFeatures=additionalFeatures)
+            eg.plots.plot_quaternary(
+                composition, model,
+                onlyPredictions=onlyPredictions,
+                originalData=originalData,
+                additionalFeatures=additionalFeatures)
