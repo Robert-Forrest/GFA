@@ -3,7 +3,8 @@
 Code and data associated with the publication "Machine-learning
 improves understanding of glass formation in metallic systems".
 
-doi:xyz
+https://doi.org/10.1039/D2DD00026A
+
 
 ## Instructions
 
