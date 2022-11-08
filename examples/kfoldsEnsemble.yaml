@@ -35,7 +35,7 @@ targets:
     type: numerical
     loss: Huber
     weight: 100
-basicFeatures:
+basic_features:
   - 'atomic_number'
   - 'periodic_number'
   - 'mass'
@@ -71,26 +71,23 @@ basicFeatures:
   - 'debye_temperature'
   - 'chemical_hardness'
   - 'chemical_potential'
-complexFeatures:
-  - 'theoreticalDensity'
-  - 'atomic_volume_deviation'
+  - 'structure'
+complex_features:
+  - 'theoretical_density'
   - 's_valence'
   - 'p_valence'
   - 'd_valence'
   - 'f_valence'
-  - 'structure_deviation'
   - 'ideal_entropy'
   - 'ideal_entropy_xia'
   - 'mismatch_entropy'
   - 'mixing_entropy'
   - 'mixing_enthalpy'
   - 'mixing_Gibbs_free_energy'
-  - 'block_deviation'
-  - 'series_deviation'
   - 'viscosity'
   - 'lattice_distortion'
-  - 'EsnPerVec'
-  - 'EsnPerMn'
+  - 'shell_valence_electron_concentration_ratio'
+  - 'shell_mendeleev_number_ratio'
   - 'mismatch_PHS'
   - 'mixing_PHS'
   - 'PHSS'
