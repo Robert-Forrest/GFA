@@ -2,5 +2,6 @@ omegaconf
 numpy
 elementy
 metallurgy
-cerebral
+cerebral>=0.0.6
 eyeglass
+pytest
