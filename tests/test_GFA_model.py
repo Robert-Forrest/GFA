@@ -12,7 +12,7 @@ def test_GFA_model():
                 {"name": "GFA", "type": "categorical"},
                 {"name": "Dmax"},
             ],
-            "training": {"max_epochs": 1000},
+            "train": {"max_epochs": 1000},
             "input_features": [
                 "atomic_number",
                 "periodic_number",
