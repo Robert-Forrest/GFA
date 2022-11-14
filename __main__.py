@@ -1,12 +1,24 @@
+import os
 import argparse
 
 from omegaconf import OmegaConf
 import cerebral as cb
+import tensorflow as tf
 
-import data
 import composition_scan
 
 if __name__ == "__main__":
+
+    # tf.keras.backend.set_floatx("float64")
+    # physical_devices = tf.config.list_physical_devices("GPU")
+    # try:
+    #     tf.config.experimental.set_memory_growth(physical_devices[0], True)
+    # except:
+    #     print("Could not set memory growth")
+
+    # os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+    # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+    # tf.get_logger().setLevel("INFO")
 
     parser = argparse.ArgumentParser()
     parser.add_argument("config", default="config.yaml", nargs="?", type=str)
@@ -15,7 +27,7 @@ if __name__ == "__main__":
 
     conf = OmegaConf.load(args.config)
 
-    cb.setup(config=args.config)
+    cb.setup(conf)
 
     if conf.task in [
         "simple",
@@ -28,94 +40,55 @@ if __name__ == "__main__":
 
         if conf.task == "simple":
             train_percentage = conf.train.get("train_percentage", 1.0)
-            max_epochs = conf.train.get("max_epochs", 100)
 
-            originalData = cb.io.load_data(postprocess=data.ensure_default_values)
+            data = cb.features.load_data(
+                postprocess=cb.GFA.ensure_default_values_glass,
+                drop_correlated_features=conf.get("drop_correlated_features", True),
+            )
 
             if train_percentage < 1.0:
 
-                train, test = cb.features.train_test_split(
-                    originalData, train_percentage
-                )
-
-                train_compositions = list(train.pop("composition"))
-                test_compositions = list(test.pop("composition"))
+                model, history, train_ds, test_ds = cb.models.train_model(data)
 
                 (
-                    train_ds,
-                    test_ds,
-                    train_features,
-                    test_features,
-                    train_labels,
-                    test_labels,
-                    sampleWeight,
-                    sampleWeightTest,
-                ) = cb.features.create_datasets(originalData, conf.targets, train, test)
-
-                model = cb.models.train_model(
-                    train_features,
-                    train_labels,
-                    sampleWeight,
-                    test_features=test_features,
-                    test_labels=test_labels,
-                    sampleWeight_test=sampleWeightTest,
-                    maxEpochs=max_epochs,
-                )
-
-                train_predictions = cb.models.evaluate_model(
-                    model,
-                    train_ds,
-                    train_labels,
-                    test_ds=test_ds,
-                    test_labels=test_labels,
-                    train_compositions=train_compositions,
-                    test_compositions=test_compositions,
-                )
+                    train_results,
+                    test_results,
+                    metrics,
+                ) = cb.models.evaluate_model(model, train_ds, test_ds=test_ds)
 
             else:
-                compositions = list(originalData.pop("composition"))
+                model, history, train_ds = cb.models.train_model(data)
 
-                (
-                    train_ds,
-                    train_features,
-                    train_labels,
-                    sampleWeight,
-                ) = cb.features.create_datasets(originalData)
+                train_results, metrics = cb.models.evaluate_model(model, train_ds)
 
-                model = cb.models.train_model(
-                    train_features, train_labels, sampleWeight, maxEpochs=max_epochs
-                )
-
-                train_predictions = cb.models.evaluate_model(
-                    model, train_ds, train_labels, train_compositions=compositions
-                )
+            print(metrics)
 
         elif conf.task == "compositionScan":
             composition_scan.run(compositions=conf.compositions)
 
+        elif conf.task != "feature_permutation":
+
+            originalData = cb.features.load_data(
+                postprocess=cb.GFA.ensure_default_values_glass
+            )
+
+            if conf.task == "kfolds":
+                cb.kfolds.kfolds(originalData)
+
+            elif conf.task == "kfoldsEnsemble":
+                cb.kfolds.kfoldsEnsemble(originalData)
+
+            elif conf.task == "tune":
+
+                (
+                    train_ds,
+                    train_features,
+                    sampleWeight,
+                ) = cb.features.create_datasets(originalData)
+
+                cb.tuning.tune(train_features, sampleWeight)
         else:
-            if conf.task != "feature_permutation":
-
-                originalData = cb.io.load_data(postprocess=data.ensure_default_values)
-
-                if conf.task == "kfolds":
-                    cb.kfolds.kfolds(originalData)
-
-                elif conf.task == "kfoldsEnsemble":
-                    cb.kfolds.kfoldsEnsemble(originalData)
-
-                elif conf.task == "tune":
-
-                    (
-                        train_ds,
-                        train_features,
-                        train_labels,
-                        sampleWeight,
-                    ) = cb.features.create_datasets(originalData)
-
-                    cb.tuning.tune(train_features, train_labels, sampleWeight)
-            else:
-                cb.permutation.permutation(postprocess=data.ensure_default_values)
+            cb.permutation.permutation(postprocess=cb.GFA.ensure_default_values_glass)
 
     else:
-        print("Unknown task", conf.task)
+        raise NotImplementedError("Unknown task: " + conf.task)
