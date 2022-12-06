@@ -1,59 +1,56 @@
 import re
 
 import cerebral as cb
-import eyeglass as eg
+import metallurgy as mg
 
-import data
+pretty_labels = {"Dmax": "$D_{\mathrm{max}}$ (mm)"}
 
 
-def run(compositions=None):
+def run(model, compositions=None, properties=None, uncertainty=False):
 
     if compositions is None:
-        print("Error: No compositions entered")
-        exit()
+        raise ValueError("Error: No compositions entered")
     else:
         for i in range(len(compositions)):
             compositions[i] = re.findall("[A-Z][^A-Z]*", compositions[i])
 
-    onlyPredictions = True
-    plotExamples = True
+    if properties is None:
+        raise ValueError("Error: No properties entered")
 
-    model = cb.models.load(cb.conf.output_directory + "/model")
-
-    x_features = cb.conf.x_features
-    y_features = cb.conf.y_features
-
-    if plotExamples:
-        originalData = cb.io.load_data(
-            model=model,
-            plot=False,
-            dropCorrelatedFeatures=False,
-            additionalFeatures=y_features,
-            postprocess=data.ensure_default_values,
-        )
-    else:
-        originalData = None
+    mg.set_model(cb.models.load(model))
 
     for composition in compositions:
+        print("".join(composition))
+
         if len(composition) == 2:
-            eg.plots.plot_binary(
-                composition,
-                model,
-                originalData=originalData,
-                x_features=x_features,
-                y_features=y_features,
-            )
-
+            alloys, percentages = mg.generate.binary(composition, step=2)
         elif len(composition) == 3:
-            eg.plots.plot_ternary(
-                composition, model, originalData=originalData, y_features=y_features
-            )
-
+            alloys, percentages = mg.generate.ternary(composition)
         elif len(composition) == 4:
-            eg.plots.plot_quaternary(
-                composition,
-                model,
-                onlyPredictions=onlyPredictions,
-                originalData=originalData,
-                y_features=y_features,
+            alloys = mg.generate.quaternary(
+                composition, quaternary_percentages=[5, 10, 15, 20]
+            )
+        else:
+            raise NotImplementedError()
+
+        for p in properties:
+            if isinstance(alloys[0], mg.Alloy):
+                values = mg.calculate(alloys, p, uncertainty=uncertainty)
+            elif isinstance(alloys[0], list) and isinstance(alloys[0][0], mg.Alloy):
+                values = []
+                for i in range(len(alloys)):
+                    values.append(mg.calculate(alloys[i], p, uncertainty=uncertainty))
+            else:
+                raise NotImplementedError()
+
+            if p in pretty_labels:
+                label = pretty_labels[p]
+            else:
+                label = p
+
+            mg.plot(
+                alloys,
+                values,
+                label=label,
+                save_path="./" + "_".join(composition) + "_" + p,
             )

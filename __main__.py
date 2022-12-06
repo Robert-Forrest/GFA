@@ -1,24 +1,14 @@
-import os
 import argparse
 
+import seaborn as sns
 from omegaconf import OmegaConf
 import cerebral as cb
-import tensorflow as tf
 
 import composition_scan
 
+sns.set()
+
 if __name__ == "__main__":
-
-    # tf.keras.backend.set_floatx("float64")
-    # physical_devices = tf.config.list_physical_devices("GPU")
-    # try:
-    #     tf.config.experimental.set_memory_growth(physical_devices[0], True)
-    # except:
-    #     print("Could not set memory growth")
-
-    # os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-    # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-    # tf.get_logger().setLevel("INFO")
 
     parser = argparse.ArgumentParser()
     parser.add_argument("config", default="config.yaml", nargs="?", type=str)
@@ -27,18 +17,18 @@ if __name__ == "__main__":
 
     conf = OmegaConf.load(args.config)
 
-    cb.setup(conf)
-
     if conf.task in [
         "simple",
         "kfolds",
         "kfoldsEnsemble",
         "tune",
         "feature_permutation",
-        "compositionScan",
+        "composition_scan",
     ]:
 
         if conf.task == "simple":
+            cb.setup(conf)
+
             train_percentage = conf.train.get("train_percentage", 1.0)
 
             data = cb.features.load_data(
@@ -63,11 +53,16 @@ if __name__ == "__main__":
 
             print(metrics)
 
-        elif conf.task == "compositionScan":
-            composition_scan.run(compositions=conf.compositions)
+        elif conf.task == "composition_scan":
+            composition_scan.run(
+                model=conf.model_path,
+                compositions=conf.compositions,
+                properties=conf.properties,
+                uncertainty=conf.get("model_uncertainty", False),
+            )
 
         elif conf.task != "feature_permutation":
-
+            cb.setup(conf)
             originalData = cb.features.load_data(
                 postprocess=cb.GFA.ensure_default_values_glass
             )
@@ -80,13 +75,11 @@ if __name__ == "__main__":
 
             elif conf.task == "tune":
 
-                (
-                    train_ds,
-                    train_features,
-                    sampleWeight,
-                ) = cb.features.create_datasets(originalData)
+                train_ds = cb.features.create_datasets(
+                    originalData, targets=cb.conf.targets
+                )
 
-                cb.tuning.tune(train_features, sampleWeight)
+                cb.tuning.tune(train_ds)
         else:
             cb.permutation.permutation(postprocess=cb.GFA.ensure_default_values_glass)
 
