@@ -9,7 +9,7 @@ def test_GFA_model():
                 {"name": "Tl", "loss": "Huber", "weight": 0.1},
                 {"name": "Tg", "loss": "Huber", "weight": 0.1},
                 {"name": "Tx", "loss": "Huber", "weight": 0.1},
-                {"name": "GFA", "type": "categorical", "weight": 1},
+                {"name": "GFA", "type": "categorical", "weight": 10},
                 {"name": "Dmax", "loss": "Huber", "weight": 100},
             ],
             "train": {"max_epochs": 1000, "dropout": 0.0, "max_norm": 10},
