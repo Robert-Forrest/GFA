@@ -6,13 +6,13 @@ def test_GFA_model():
     cb.setup(
         {
             "targets": [
-                {"name": "Tl"},
-                {"name": "Tg"},
-                {"name": "Tx"},
-                {"name": "GFA", "type": "categorical"},
-                {"name": "Dmax"},
+                {"name": "Tl", "loss": "Huber", "weight": 0.1},
+                {"name": "Tg", "loss": "Huber", "weight": 0.1},
+                {"name": "Tx", "loss": "Huber", "weight": 0.1},
+                {"name": "GFA", "type": "categorical", "weight": 1},
+                {"name": "Dmax", "loss": "Huber", "weight": 100},
             ],
-            "train": {"max_epochs": 1000},
+            "train": {"max_epochs": 1000, "dropout": 0.0, "max_norm": 10},
             "input_features": [
                 "atomic_number",
                 "periodic_number",
@@ -86,7 +86,11 @@ def test_GFA_model():
         metrics,
     ) = cb.models.evaluate_model(model, train_ds)
 
+    print(metrics)
     assert metrics["Tl"]["train"]["R_sq"] > 0.5
     assert metrics["Tg"]["train"]["R_sq"] > 0.5
     assert metrics["Tx"]["train"]["R_sq"] > 0.5
     assert metrics["GFA"]["train"]["accuracy"] > 0.5
+
+
+test_GFA_model()
