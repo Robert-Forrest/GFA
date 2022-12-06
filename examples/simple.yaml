@@ -2,9 +2,7 @@ task: simple
 train:
   max_epochs: 1000
 data:
-  directory: './data'
-  files:
-    - 'data.csv'
+  - './data/data.csv'
 targets:
   - name: Tl
     type: numerical

@@ -4,9 +4,7 @@ train:
 kfolds:
   num_folds: 5
 data:
-  directory: './data'
-  files:
-    - 'data.csv'
+  - './data/data.csv'
 targets:
   - name: Tl
     type: numerical
